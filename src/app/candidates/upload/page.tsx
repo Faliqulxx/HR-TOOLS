@@ -1,18 +1,29 @@
 import { Upload } from "lucide-react";
+import { UploadDropzone } from "@/components/candidates/UploadDropzone";
+
+export const metadata = {
+  title: "Upload Candidates — HR Tools",
+  description: "Drag and drop PDF/DOCX resumes for AI parsing",
+};
 
 export default function CandidateUploadPage() {
   return (
-    <div className="flex flex-col items-center justify-center h-full min-h-[calc(100vh-0px)] gap-4 text-center px-8">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-600/20 border border-emerald-600/30">
-        <Upload className="h-8 w-8 text-emerald-400" />
+    <div className="p-6 lg:p-8 max-w-3xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600/20 border border-emerald-600/30">
+            <Upload className="h-5 w-5 text-emerald-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-white">Upload Resumes</h1>
+        </div>
+        <p className="text-slate-400 text-sm ml-12">
+          Drop PDF or DOCX files here. The AI parser will automatically extract
+          candidate information.
+        </p>
       </div>
-      <h1 className="text-2xl font-bold text-white">Upload Candidates</h1>
-      <p className="text-slate-400 max-w-sm text-sm">
-        Bulk upload PDF/DOCX resumes and let AI parse them automatically. Full upload &amp; parsing coming in Phase 2.
-      </p>
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-medium text-amber-400">
-        Coming in Phase 2
-      </span>
+
+      <UploadDropzone />
     </div>
   );
 }
