@@ -57,13 +57,13 @@ export async function POST(req: NextRequest) {
 
     // 3. Parse resume
     let parsed;
-    let parsingStatus: "parsed" | "needs_review" | "failed" = "failed";
+    let parsingStatus: "parsed" | "needs_review" | "failed" = "needs_review";
 
-    if (rawText && !parseError) {
+    if (rawText && rawText.trim().length > 20) {
       try {
         parsed = parseResume(rawText);
 
-        // Determine status
+        // Determine status based on what was extracted
         if (parsed.fullName || parsed.email) {
           parsingStatus = "parsed";
         } else {
@@ -73,7 +73,12 @@ export async function POST(req: NextRequest) {
         parsingStatus = "needs_review";
       }
     } else {
-      parsingStatus = "failed";
+      // File saved but text couldn't be extracted (scanned PDF, protected, etc.)
+      // Still save as needs_review so HR can fill manually
+      parsingStatus = "needs_review";
+      if (parseError) {
+        console.warn(`[upload-resume] Text extraction issue for ${file.name}: ${parseError}`);
+      }
     }
 
     // 4. Save to database
