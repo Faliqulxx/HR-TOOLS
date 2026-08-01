@@ -42,12 +42,11 @@ export type ParsedResumeData = {
 // ── Regex Patterns ────────────────────────────────────────────────────────────
 
 const EMAIL_REGEX = /[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}/;
+// Phone: allow spaces, hyphens, dots between digit groups (e.g. +62 877-0201-2138)
 const PHONE_REGEX =
-  /(?:\+62|62|08)\d{7,13}|(?:\+1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/;
+  /(?:\+62|\+62|62|08)[\s.-]?\d{3,4}[\s.-]?\d{3,5}[\s.-]?\d{3,5}|(?:\+1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/;
 const LINKEDIN_REGEX = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[\w-]+/i;
 const GITHUB_REGEX = /(?:https?:\/\/)?(?:www\.)?github\.com\/[\w-]+/i;
-const PORTFOLIO_REGEX =
-  /(?:https?:\/\/)?(?:www\.)?(?!linkedin|github)[\w-]+\.(?:com|io|dev|me|id|net|co)(?:\/[\w-]*)?/i;
 const YEAR_REGEX = /\b(19|20)\d{2}\b/g;
 
 // Section heading patterns
@@ -136,15 +135,30 @@ function extractGithub(text: string): string | null {
 }
 
 function extractPortfolio(text: string): string | null {
-  // Find URLs that are NOT linkedin or github
-  const urls = text.match(
-    /(?:https?:\/\/)?(?:www\.)?[\w-]+\.(?:com|io|dev|me|id|net|co\.id)(?:\/[\w/-]*)?/gi
+  // Prioritize full https:// URLs that are not linkedin/github
+  const fullUrls = text.match(/https?:\/\/[^\s,;|\]\[()<>"']+/gi);
+  if (fullUrls) {
+    const portfolio = fullUrls.find(
+      (u) => !u.includes("linkedin.com") && !u.includes("github.com") && !u.includes("gmail.com")
+    );
+    if (portfolio) {
+      // Trim trailing punctuation (period, slash, etc.)
+      return portfolio.replace(/[.,;|)>"']+$/, "");
+    }
+  }
+
+  // Fallback: match bare domains with common TLDs (excluding email domains)
+  const bareUrls = text.match(
+    /(?:www\.)?[\w-]+\.(?:app|io|dev|me|id|net|co\.id|vercel\.app|netlify\.app|web\.app|pages\.dev)(?:\/[\w/-]*)?/gi
   );
-  if (!urls) return null;
-  const portfolio = urls.find(
-    (u) => !u.includes("linkedin.com") && !u.includes("github.com")
-  );
-  return portfolio ?? null;
+  if (bareUrls) {
+    const portfolio = bareUrls.find(
+      (u) => !u.includes("linkedin") && !u.includes("github") && !u.includes("gmail")
+    );
+    if (portfolio) return portfolio;
+  }
+
+  return null;
 }
 
 function extractFullName(headerText: string): string | null {
