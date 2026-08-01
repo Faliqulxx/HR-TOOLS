@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MatchScoreBar, SkillBreakdownList } from "./MatchScoreBar";
+import { MatchScoreBar, SkillBreakdownList, getSignalConfig } from "./MatchScoreBar";
 import { matchAllCandidatesToJob } from "@/lib/actions/matching.actions";
 import type { SortField } from "@/lib/actions/matching.actions";
 
@@ -54,12 +54,12 @@ type RankEntry = {
 };
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  new: { label: "New", className: "bg-slate-700/50 text-slate-400 border border-slate-700" },
-  screening: { label: "Screening", className: "bg-blue-500/20 text-blue-300 border border-blue-500/30" },
-  interview: { label: "Interview", className: "bg-violet-500/20 text-violet-300 border border-violet-500/30" },
-  offered: { label: "Offered", className: "bg-amber-500/20 text-amber-300 border border-amber-500/30" },
-  hired: { label: "Hired", className: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" },
-  rejected: { label: "Rejected", className: "bg-rose-500/20 text-rose-300 border border-rose-500/30" },
+  new: { label: "New", className: "bg-slate-800 text-slate-300 border-[#1E2D4A]" },
+  screening: { label: "Screening", className: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30" },
+  interview: { label: "Interview", className: "bg-blue-500/10 text-blue-300 border-blue-500/30" },
+  offered: { label: "Offered", className: "bg-amber-500/10 text-amber-300 border-amber-500/30" },
+  hired: { label: "Hired", className: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" },
+  rejected: { label: "Rejected", className: "bg-rose-500/10 text-rose-300 border-rose-500/30" },
 };
 
 interface RankingTableProps {
@@ -88,7 +88,6 @@ export function RankingTable({ jobId, jobTitle, initialData }: RankingTableProps
 
   const handleSortChange = (value: string) => {
     setSort(value as SortField);
-    // Re-fetch with new sort via URL param
     router.push(`/jobs/${jobId}/candidates?sort=${value}`);
   };
 
@@ -97,119 +96,129 @@ export function RankingTable({ jobId, jobTitle, initialData }: RankingTableProps
   };
 
   return (
-    <div className="space-y-5">
-      {/* Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-4">
+      {/* Control Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-[#182238] bg-[#0E131F]">
         <div className="flex items-center gap-3">
-          <p className="text-sm text-slate-400">
-            {initialData.length} candidate{initialData.length !== 1 ? "s" : ""} matched
-          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+              Ranked Pool
+            </span>
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {initialData.length} Candidates
+            </span>
+          </div>
+
           {runResult && (
-            <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-              ✓ {runResult.matched}/{runResult.total} scored
+            <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
+              ✓ Scored {runResult.matched}/{runResult.total} candidates
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Sort */}
-          <Select value={sort} onValueChange={(value) => handleSortChange(value ?? "matchScore")}>
-            <SelectTrigger className="w-[180px] border-slate-700 bg-slate-900 text-slate-300 text-sm focus:ring-violet-500">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
-              <SelectItem value="matchScore">Match Score</SelectItem>
-              <SelectItem value="experience">Experience</SelectItem>
-              <SelectItem value="gpa">GPA</SelectItem>
-              <SelectItem value="education">Education Level</SelectItem>
-              <SelectItem value="uploadDate">Upload Date</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex items-center gap-3">
+          {/* Sorting Dropdown */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-slate-400">Sort:</span>
+            <Select value={sort} onValueChange={(value) => handleSortChange(value ?? "matchScore")}>
+              <SelectTrigger className="w-[180px] border-[#1E2D4A] bg-[#090D16] text-slate-200 text-xs font-mono focus:ring-blue-500">
+                <SelectValue placeholder="Sort by..." />
+              </SelectTrigger>
+              <SelectContent className="border-[#1E2D4A] bg-[#0E131F] text-slate-100 font-mono text-xs">
+                <SelectItem value="matchScore">Match Score (Desc)</SelectItem>
+                <SelectItem value="experience">Experience Years</SelectItem>
+                <SelectItem value="gpa">GPA Rating</SelectItem>
+                <SelectItem value="education">Degree Tier</SelectItem>
+                <SelectItem value="uploadDate">Upload Recency</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-          {/* Run matching */}
+          {/* Run Matching CTA */}
           <Button
             onClick={handleRunMatching}
             disabled={isPending}
-            className="bg-violet-600 hover:bg-violet-700 text-white gap-2 shadow-lg shadow-violet-900/30"
+            className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-semibold gap-2 shadow-md shadow-blue-900/30 px-4"
           >
             {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin text-white" />
             ) : (
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4 text-blue-200" />
             )}
-            {isPending ? "Running..." : "Run Matching"}
+            {isPending ? "Executing AI Engine..." : "Run AI Matching"}
           </Button>
         </div>
       </div>
 
-      {/* Empty state */}
+      {/* Empty State */}
       {initialData.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center rounded-xl border border-slate-800 bg-slate-900/40">
-          <div className="h-14 w-14 rounded-2xl bg-violet-600/20 border border-violet-600/30 flex items-center justify-center">
-            <Zap className="h-7 w-7 text-violet-400" />
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center rounded-xl border border-dashed border-[#182238] bg-[#0E131F]/50">
+          <div className="h-12 w-12 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+            <Zap className="h-6 w-6" />
           </div>
-          <div>
-            <p className="text-slate-300 font-medium">No matches yet</p>
-            <p className="text-slate-500 text-sm mt-1">
-              Click &quot;Run Matching&quot; to score all candidates against this job&apos;s requirements.
+          <div className="max-w-md">
+            <p className="text-slate-200 font-semibold">No Candidate Matches Evaluated</p>
+            <p className="text-slate-400 text-xs mt-1">
+              Click <span className="text-blue-400 font-mono font-bold">&quot;Run AI Matching&quot;</span> above to execute criteria analysis against all active candidate resumes.
             </p>
           </div>
         </div>
       )}
 
-      {/* Ranking list */}
+      {/* Candidate Ranking List */}
       {initialData.length > 0 && (
         <div className="space-y-2">
           {initialData.map((entry) => {
             const isExpanded = expandedId === entry.candidateId;
             const statusCfg = statusConfig[entry.status] ?? statusConfig.new;
+            const signalCfg = getSignalConfig(entry.matchScore);
 
             return (
               <div
                 key={entry.candidateId}
-                className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden transition-all duration-200"
+                className="rounded-xl border border-[#182238] bg-[#0E131F]/80 overflow-hidden transition-all duration-200 hover:border-slate-700/60"
               >
-                {/* Main row */}
+                {/* Main Row */}
                 <div
-                  className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-slate-800/40 transition-colors"
+                  className="flex items-center gap-4 px-4 py-3.5 cursor-pointer hover:bg-[#121A2C]/60 transition-colors"
                   onClick={() => toggleExpand(entry.candidateId)}
                 >
-                  {/* Rank */}
+                  {/* Rank Badge */}
                   <div
-                    className={`shrink-0 flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                    className={`shrink-0 flex h-8 w-11 items-center justify-center rounded-md font-mono text-xs font-bold ${
                       entry.rank === 1
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                        ? "bg-amber-500/10 text-amber-300 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
                         : entry.rank === 2
-                          ? "bg-slate-600/40 text-slate-300 border border-slate-600"
+                          ? "bg-slate-400/10 text-slate-200 border border-slate-400/30"
                           : entry.rank === 3
-                            ? "bg-orange-700/20 text-orange-400 border border-orange-700/30"
-                            : "bg-slate-800 text-slate-500 border border-slate-700"
+                            ? "bg-orange-600/10 text-orange-300 border border-orange-600/30"
+                            : "bg-[#090D16] text-slate-400 border border-[#182238]"
                     }`}
                   >
-                    {entry.rank}
+                    #{entry.rank < 10 ? `0${entry.rank}` : entry.rank}
                   </div>
 
-                  {/* Name & info */}
+                  {/* Candidate Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-200 truncate">
+                      <p className="text-sm font-bold text-slate-100 truncate">
                         {entry.fullName}
                       </p>
-                      <Badge className={`${statusCfg.className} text-[10px]`}>
+                      <Badge className={`${statusCfg.className} text-[10px] font-mono`}>
                         {statusCfg.label}
                       </Badge>
                     </div>
-                    <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500 flex-wrap">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-400 flex-wrap">
                       {entry.latestPosition && (
                         <span className="flex items-center gap-1">
-                          <Briefcase className="h-3 w-3" />
+                          <Briefcase className="h-3 w-3 text-slate-400" />
                           {entry.latestPosition}
                           {entry.latestCompany && ` @ ${entry.latestCompany}`}
                         </span>
                       )}
                       {entry.education && (
-                        <span className="flex items-center gap-1">
-                          <GraduationCap className="h-3 w-3" />
+                        <span className="flex items-center gap-1 font-mono text-[11px] text-slate-400">
+                          <GraduationCap className="h-3 w-3 text-slate-400" />
                           {entry.education.degree ?? ""}
                           {entry.education.gpa
                             ? ` · GPA ${entry.education.gpa}`
@@ -219,26 +228,18 @@ export function RankingTable({ jobId, jobTitle, initialData }: RankingTableProps
                     </div>
                   </div>
 
-                  {/* Score bar */}
-                  <div className="w-40 shrink-0 hidden sm:block">
+                  {/* Signal Matrix Score Bar */}
+                  <div className="w-48 shrink-0 hidden sm:block">
                     <MatchScoreBar score={entry.matchScore} size="sm" />
                   </div>
 
-                  {/* Score number */}
+                  {/* Signal Pill Badge */}
                   <div className="shrink-0 text-right">
-                    <p
-                      className={`text-lg font-bold tabular-nums ${
-                        entry.matchScore >= 80
-                          ? "text-emerald-400"
-                          : entry.matchScore >= 60
-                            ? "text-violet-400"
-                            : entry.matchScore >= 40
-                              ? "text-amber-400"
-                              : "text-rose-400"
-                      }`}
+                    <span
+                      className={`font-mono text-xs font-extrabold px-2.5 py-1 rounded-md border ${signalCfg.badgeBg} ${signalCfg.badgeText} ${signalCfg.badgeBorder}`}
                     >
-                      {entry.matchScore.toFixed(1)}%
-                    </p>
+                      {signalCfg.tierName}
+                    </span>
                   </div>
 
                   {/* Actions */}
@@ -250,34 +251,39 @@ export function RankingTable({ jobId, jobTitle, initialData }: RankingTableProps
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-slate-600 hover:text-violet-400 hover:bg-violet-500/10"
+                        className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10"
+                        title="View Full Candidate Dossier"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
                     </Link>
                     {isExpanded ? (
-                      <ChevronUp className="h-4 w-4 text-slate-600" />
+                      <ChevronUp className="h-4 w-4 text-slate-400" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 text-slate-600" />
+                      <ChevronDown className="h-4 w-4 text-slate-400" />
                     )}
                   </div>
                 </div>
 
-                {/* Expanded: skill breakdown */}
-                {isExpanded && entry.matchDetail.length > 0 && (
-                  <div className="border-t border-slate-800 px-4 py-3 bg-slate-950/40">
-                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
-                      Skill Breakdown — {jobTitle}
-                    </p>
-                    <SkillBreakdownList detail={entry.matchDetail} />
-                  </div>
-                )}
+                {/* Expanded Skill Breakdown Drawer */}
+                {isExpanded && (
+                  <div className="border-t border-[#182238] px-5 py-4 bg-[#070A12]/90 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                        Criteria Skill Evaluation Breakdown — {jobTitle}
+                      </p>
+                      <span className="text-[10px] font-mono text-slate-400">
+                        Evaluated {entry.matchDetail.length} Job Requirements
+                      </span>
+                    </div>
 
-                {isExpanded && entry.matchDetail.length === 0 && (
-                  <div className="border-t border-slate-800 px-4 py-3 bg-slate-950/40">
-                    <p className="text-sm text-slate-600 italic">
-                      No skill breakdown available. Re-run matching to generate details.
-                    </p>
+                    {entry.matchDetail.length > 0 ? (
+                      <SkillBreakdownList detail={entry.matchDetail} />
+                    ) : (
+                      <p className="text-xs text-slate-400 italic">
+                        No detailed skill breakdown available. Re-run AI matching to generate.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

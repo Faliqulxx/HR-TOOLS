@@ -5,9 +5,17 @@ import { JobForm } from "@/components/jobs/JobForm";
 import { getJobById } from "@/lib/actions/job.actions";
 import type { JobFormData } from "@/lib/validations/job.schema";
 
-export const metadata = {
-  title: "Edit Job — HR Tools",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const job = await getJobById(id);
+  return {
+    title: job ? `Edit ${job.title} — Signal HR` : "Edit Job Requisition — Signal HR",
+  };
+}
 
 export default async function EditJobPage({
   params,
@@ -18,7 +26,6 @@ export default async function EditJobPage({
   const job = await getJobById(id);
   if (!job) notFound();
 
-  // Map Prisma model to JobFormData shape
   const initialData: JobFormData & { id: string } = {
     id: job.id,
     title: job.title,
@@ -39,31 +46,33 @@ export default async function EditJobPage({
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6">
+    <div className="p-6 lg:p-8 max-w-4xl mx-auto space-y-6">
+      {/* Breadcrumb Navigation */}
+      <div className="flex items-center gap-2 text-xs font-mono">
         <Link
           href="/jobs"
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-slate-400 hover:text-slate-200 transition-colors"
         >
-          Jobs
+          Requisitions
         </Link>
-        <ChevronLeft className="h-3 w-3 text-slate-700 rotate-180" />
+        <ChevronLeft className="h-3.5 w-3.5 text-slate-400 rotate-180" />
         <Link
           href={`/jobs/${job.id}`}
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-slate-400 hover:text-slate-200 transition-colors truncate max-w-[200px]"
         >
           {job.title}
         </Link>
-        <ChevronLeft className="h-3 w-3 text-slate-700 rotate-180" />
-        <span className="text-sm text-slate-400">Edit</span>
+        <ChevronLeft className="h-3.5 w-3.5 text-slate-400 rotate-180" />
+        <span className="text-slate-300 font-semibold">Edit Specs</span>
       </div>
 
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Edit Job</h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Update the job details below. Changes will be saved immediately.
+      {/* Header Banner */}
+      <div className="border-b border-[#182238] pb-6">
+        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
+          Edit Requisition Specifications
+        </h1>
+        <p className="text-slate-400 text-xs font-mono mt-0.5">
+          Update criteria evaluation matrix and requisition parameters for &quot;{job.title}&quot;.
         </p>
       </div>
 

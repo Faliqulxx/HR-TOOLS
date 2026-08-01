@@ -1,6 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 
-type KpiColor = "violet" | "blue" | "emerald" | "amber" | "rose" | "slate";
+type KpiColor = "emerald" | "cyan" | "amber" | "rose" | "blue" | "slate";
 
 interface KpiCardProps {
   label: string;
@@ -11,42 +11,51 @@ interface KpiCardProps {
   description?: string;
 }
 
-const colorMap: Record<KpiColor, { icon: string; value: string; border: string; bg: string }> = {
-  violet: {
-    icon: "bg-violet-600/20 border-violet-600/30 text-violet-400",
-    value: "text-violet-400",
-    border: "border-violet-500/10",
-    bg: "bg-violet-500/5",
-  },
-  blue: {
-    icon: "bg-blue-600/20 border-blue-600/30 text-blue-400",
-    value: "text-blue-400",
-    border: "border-blue-500/10",
-    bg: "bg-blue-500/5",
-  },
+const colorMap: Record<
+  KpiColor,
+  { iconBg: string; iconText: string; valueText: string; cardBorder: string; cardBg: string }
+> = {
   emerald: {
-    icon: "bg-emerald-600/20 border-emerald-600/30 text-emerald-400",
-    value: "text-emerald-400",
-    border: "border-emerald-500/10",
-    bg: "bg-emerald-500/5",
+    iconBg: "bg-emerald-500/10 border-emerald-500/20",
+    iconText: "text-emerald-400",
+    valueText: "text-emerald-400",
+    cardBorder: "border-[#1A382E]",
+    cardBg: "bg-[#0A1612]",
+  },
+  cyan: {
+    iconBg: "bg-cyan-500/10 border-cyan-500/20",
+    iconText: "text-cyan-400",
+    valueText: "text-cyan-400",
+    cardBorder: "border-[#153448]",
+    cardBg: "bg-[#091724]",
   },
   amber: {
-    icon: "bg-amber-600/20 border-amber-600/30 text-amber-400",
-    value: "text-amber-400",
-    border: "border-amber-500/10",
-    bg: "bg-amber-500/5",
+    iconBg: "bg-amber-500/10 border-amber-500/20",
+    iconText: "text-amber-400",
+    valueText: "text-amber-400",
+    cardBorder: "border-[#3A2B14]",
+    cardBg: "bg-[#181108]",
   },
   rose: {
-    icon: "bg-rose-600/20 border-rose-600/30 text-rose-400",
-    value: "text-rose-400",
-    border: "border-rose-500/10",
-    bg: "bg-rose-500/5",
+    iconBg: "bg-rose-500/10 border-rose-500/20",
+    iconText: "text-rose-400",
+    valueText: "text-rose-400",
+    cardBorder: "border-[#3B1925]",
+    cardBg: "bg-[#180A10]",
+  },
+  blue: {
+    iconBg: "bg-blue-500/10 border-blue-500/20",
+    iconText: "text-blue-400",
+    valueText: "text-blue-400",
+    cardBorder: "border-[#192E56]",
+    cardBg: "bg-[#0B1428]",
   },
   slate: {
-    icon: "bg-slate-700 border-slate-600 text-slate-400",
-    value: "text-slate-300",
-    border: "border-slate-700/50",
-    bg: "bg-slate-800/40",
+    iconBg: "bg-slate-800/60 border-slate-700/50",
+    iconText: "text-slate-300",
+    valueText: "text-slate-200",
+    cardBorder: "border-[#1E2D4A]",
+    cardBg: "bg-[#0E131F]",
   },
 };
 
@@ -54,7 +63,7 @@ export function KpiCard({
   label,
   value,
   icon: Icon,
-  color = "violet",
+  color = "blue",
   suffix,
   description,
 }: KpiCardProps) {
@@ -62,30 +71,30 @@ export function KpiCard({
 
   return (
     <div
-      className={`rounded-xl border ${c.border} ${c.bg} p-5 flex items-start gap-4 hover:scale-[1.02] transition-transform duration-200`}
+      className={`rounded-xl border ${c.cardBorder} ${c.cardBg} p-5 flex items-start gap-4 transition-all duration-200 hover:border-slate-600/50 shadow-sm`}
     >
-      {/* Icon */}
+      {/* Icon Badge */}
       <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${c.icon}`}
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${c.iconBg} ${c.iconText}`}
       >
         <Icon className="h-5 w-5" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+        <p className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider">
           {label}
         </p>
         <div className="flex items-baseline gap-1 mt-1">
-          <span className={`text-3xl font-bold tabular-nums ${c.value}`}>
+          <span className={`text-3xl font-extrabold font-mono tabular-nums tracking-tight ${c.valueText}`}>
             {value}
           </span>
           {suffix && (
-            <span className="text-sm text-slate-500">{suffix}</span>
+            <span className="text-sm font-mono text-slate-400">{suffix}</span>
           )}
         </div>
         {description && (
-          <p className="text-xs text-slate-600 mt-1">{description}</p>
+          <p className="text-xs text-slate-400 mt-1 truncate">{description}</p>
         )}
       </div>
     </div>

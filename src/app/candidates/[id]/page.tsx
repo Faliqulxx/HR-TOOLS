@@ -27,23 +27,23 @@ export async function generateMetadata({
   const candidate = await getCandidateById(id);
   return {
     title: candidate
-      ? `${candidate.fullName} — HR Tools`
-      : "Candidate — HR Tools",
+      ? `${candidate.fullName} — Candidate Dossier | Signal HR`
+      : "Candidate Dossier — Signal HR",
   };
 }
 
 const parsingStatusConfig: Record<string, { label: string; className: string }> = {
   parsed: {
-    label: "Parsed",
-    className: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+    label: "Parsed & Verified",
+    className: "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono",
   },
   needs_review: {
     label: "Needs Review",
-    className: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+    className: "bg-amber-500/10 text-amber-300 border border-amber-500/30 font-mono",
   },
   failed: {
-    label: "Failed",
-    className: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
+    label: "Parsing Failed",
+    className: "bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono",
   },
 };
 
@@ -60,7 +60,6 @@ export default async function CandidateDetailPage({
   const candidate = await getCandidateById(id);
   if (!candidate) notFound();
 
-  // Fetch application context if jobId param is present
   let application = null;
   let jobTitle: string | null = null;
 
@@ -72,7 +71,6 @@ export default async function CandidateDetailPage({
     jobTitle = application?.job?.title ?? null;
   }
 
-  // Generate AI summary (template-based)
   const aiSummary = generateSummary(
     {
       fullName: candidate.fullName,
@@ -101,7 +99,6 @@ export default async function CandidateDetailPage({
       : null
   );
 
-  // Optionally persist aiSummary to Application if changed
   if (application && application.aiSummary !== aiSummary) {
     await prisma.application.update({
       where: { candidateId_jobId: { candidateId: id, jobId: jobId! } },
@@ -117,7 +114,6 @@ export default async function CandidateDetailPage({
     parsingStatusConfig[candidate.parsingStatus] ??
     parsingStatusConfig.needs_review;
 
-  // Initials for avatar
   const initials = candidate.fullName
     .split(" ")
     .slice(0, 2)
@@ -125,143 +121,148 @@ export default async function CandidateDetailPage({
     .join("");
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 mb-6 text-sm">
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+      {/* Breadcrumb Navigation */}
+      <div className="flex items-center gap-2 text-xs font-mono">
         {jobId ? (
           <>
             <Link
               href={`/jobs/${jobId}/candidates`}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-slate-400 hover:text-slate-200 transition-colors"
             >
-              Candidates
+              Candidate Leaderboard
             </Link>
-            <ChevronLeft className="h-3 w-3 text-slate-700 rotate-180" />
-            <span className="text-slate-400">{candidate.fullName}</span>
+            <span className="text-slate-400">&bull;</span>
+            <span className="text-slate-300 font-semibold">{candidate.fullName}</span>
           </>
         ) : (
           <Link
             href="/candidates/upload"
-            className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-300 transition-colors"
+            className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition-colors"
           >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Upload
+            <ChevronLeft className="h-3.5 w-3.5" />
+            Return to Upload Console
           </Link>
         )}
       </div>
 
-      {/* Profile header */}
-      <div className="mb-8 flex items-start gap-5 flex-wrap">
-        {/* Avatar */}
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white text-xl font-bold shadow-lg shadow-violet-900/30">
-          {initials || <User className="h-7 w-7" />}
-        </div>
-
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-3 flex-wrap mb-2">
-            <h1 className="text-2xl font-bold text-white">
-              {candidate.fullName}
-            </h1>
-            <Badge className={statusCfg.className}>{statusCfg.label}</Badge>
+      {/* Candidate Dossier Header */}
+      <div className="rounded-xl border border-[#182238] bg-[#0E131F] p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-start gap-4">
+          {/* Avatar Pill */}
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white text-xl font-mono font-extrabold shadow-md shadow-blue-900/30 ring-1 ring-blue-500/30">
+            {initials || <User className="h-7 w-7" />}
           </div>
 
-          {/* Contact row */}
-          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-slate-400">
-            {candidate.email && (
-              <a
-                href={`mailto:${candidate.email}`}
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <Mail className="h-3.5 w-3.5 text-slate-600" />
-                {candidate.email}
-              </a>
-            )}
-            {candidate.phone && (
-              <a
-                href={`tel:${candidate.phone}`}
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <Phone className="h-3.5 w-3.5 text-slate-600" />
-                {candidate.phone}
-              </a>
-            )}
-            {candidate.linkedinUrl && (
-              <a
-                href={
-                  candidate.linkedinUrl.startsWith("http")
-                    ? candidate.linkedinUrl
-                    : `https://${candidate.linkedinUrl}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <Link2 className="h-3.5 w-3.5 text-slate-600" />
-                LinkedIn
-              </a>
-            )}
-            {candidate.githubUrl && (
-              <a
-                href={
-                  candidate.githubUrl.startsWith("http")
-                    ? candidate.githubUrl
-                    : `https://${candidate.githubUrl}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <GitBranch className="h-3.5 w-3.5 text-slate-600" />
-                GitHub
-              </a>
-            )}
-            {candidate.portfolioUrl && (
-              <a
-                href={
-                  candidate.portfolioUrl.startsWith("http")
-                    ? candidate.portfolioUrl
-                    : `https://${candidate.portfolioUrl}`
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <Globe className="h-3.5 w-3.5 text-slate-600" />
-                Portfolio
-              </a>
-            )}
+          <div className="space-y-1 min-w-0">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
+                {candidate.fullName}
+              </h1>
+              <Badge className={`${statusCfg.className} text-[10px]`}>
+                {statusCfg.label}
+              </Badge>
+            </div>
+
+            {/* Contact Details */}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-mono text-slate-400 pt-1">
+              {candidate.email && (
+                <a
+                  href={`mailto:${candidate.email}`}
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+                >
+                  <Mail className="h-3.5 w-3.5 text-slate-400" />
+                  {candidate.email}
+                </a>
+              )}
+              {candidate.phone && (
+                <a
+                  href={`tel:${candidate.phone}`}
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+                >
+                  <Phone className="h-3.5 w-3.5 text-slate-400" />
+                  {candidate.phone}
+                </a>
+              )}
+              {candidate.linkedinUrl && (
+                <a
+                  href={
+                    candidate.linkedinUrl.startsWith("http")
+                      ? candidate.linkedinUrl
+                      : `https://${candidate.linkedinUrl}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+                >
+                  <Link2 className="h-3.5 w-3.5 text-slate-400" />
+                  LinkedIn Profile
+                </a>
+              )}
+              {candidate.githubUrl && (
+                <a
+                  href={
+                    candidate.githubUrl.startsWith("http")
+                      ? candidate.githubUrl
+                      : `https://${candidate.githubUrl}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+                >
+                  <GitBranch className="h-3.5 w-3.5 text-slate-400" />
+                  GitHub Code
+                </a>
+              )}
+              {candidate.portfolioUrl && (
+                <a
+                  href={
+                    candidate.portfolioUrl.startsWith("http")
+                      ? candidate.portfolioUrl
+                      : `https://${candidate.portfolioUrl}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
+                >
+                  <Globe className="h-3.5 w-3.5 text-slate-400" />
+                  Portfolio Web
+                </a>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Edit button */}
-        <Link href={`/candidates/${candidate.id}/review-parsing`}>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-slate-700 text-slate-400 hover:bg-slate-800 gap-2 shrink-0"
-          >
-            <FileEdit className="h-3.5 w-3.5" />
-            Edit Data
-          </Button>
-        </Link>
+        {/* Action Button */}
+        <div className="shrink-0">
+          <Link href={`/candidates/${candidate.id}/review-parsing`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-[#1E2D4A] bg-[#090D16] text-slate-300 hover:bg-[#141B2D] font-mono text-xs gap-2"
+            >
+              <FileEdit className="h-3.5 w-3.5 text-blue-400" />
+              Review Parsed Data
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+      {/* Quick Telemetry Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <StatCard
-          label="Skills"
+          label="Skills Inventory"
           value={candidate.skills.length}
-          color="violet"
+          color="cyan"
         />
         <StatCard
-          label="Experience"
-          value={`${candidate.experiences.length} roles`}
+          label="Recorded Roles"
+          value={`${candidate.experiences.length} Positions`}
           color="blue"
         />
         <StatCard
-          label="Education"
-          value={candidate.educations[0]?.degree ?? "–"}
+          label="Degree Tier"
+          value={candidate.educations[0]?.degree ?? "N/A"}
           color="emerald"
         />
         <StatCard
@@ -271,7 +272,7 @@ export default async function CandidateDetailPage({
         />
       </div>
 
-      {/* Tabs */}
+      {/* Candidate Dossier Tabs */}
       <CandidateTabs
         candidate={candidate}
         aiSummary={aiSummary}
@@ -283,8 +284,6 @@ export default async function CandidateDetailPage({
   );
 }
 
-// ── Stat card helper ──────────────────────────────────────────────────────────
-
 function StatCard({
   label,
   value,
@@ -292,30 +291,23 @@ function StatCard({
 }: {
   label: string;
   value: string | number;
-  color: "violet" | "blue" | "emerald" | "amber";
+  color: "cyan" | "blue" | "emerald" | "amber";
 }) {
   const colorMap = {
-    violet: "border-violet-500/20 bg-violet-500/5",
-    blue: "border-blue-500/20 bg-blue-500/5",
-    emerald: "border-emerald-500/20 bg-emerald-500/5",
-    amber: "border-amber-500/20 bg-amber-500/5",
-  };
-
-  const textMap = {
-    violet: "text-violet-400",
-    blue: "text-blue-400",
-    emerald: "text-emerald-400",
-    amber: "text-amber-400",
+    cyan: "border-cyan-500/20 bg-cyan-500/5 text-cyan-400",
+    blue: "border-blue-500/20 bg-blue-500/5 text-blue-400",
+    emerald: "border-emerald-500/20 bg-emerald-500/5 text-emerald-400",
+    amber: "border-amber-500/20 bg-amber-500/5 text-amber-400",
   };
 
   return (
     <div
-      className={`rounded-xl border ${colorMap[color]} p-3 text-center`}
+      className={`rounded-xl border ${colorMap[color]} p-3.5 text-center shadow-sm`}
     >
-      <p className={`text-lg font-bold truncate ${textMap[color]}`}>
+      <p className="text-base font-extrabold font-mono truncate">
         {value}
       </p>
-      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+      <p className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mt-0.5">{label}</p>
     </div>
   );
 }

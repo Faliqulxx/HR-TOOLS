@@ -19,12 +19,17 @@ export function ApplicantsChart({ data }: ApplicantsChartProps) {
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">
-        Applicants — Last 7 Days
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+          Daily Applicant Velocity
+        </h3>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          7-Day Window
+        </span>
+      </div>
 
       {isEmpty ? (
-        <EmptyChartState label="No applicants in the last 7 days" />
+        <EmptyChartState label="No candidate activity recorded in past 7 days" />
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           <BarChart
@@ -33,36 +38,37 @@ export function ApplicantsChart({ data }: ApplicantsChartProps) {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#1e293b"
+              stroke="#182238"
               vertical={false}
             />
             <XAxis
               dataKey="date"
-              tick={{ fill: "#64748b", fontSize: 11 }}
+              tick={{ fill: "#64748B", fontSize: 11, fontFamily: "monospace" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               allowDecimals={false}
-              tick={{ fill: "#64748b", fontSize: 11 }}
+              tick={{ fill: "#64748B", fontSize: 11, fontFamily: "monospace" }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #1e293b",
+                backgroundColor: "#090D16",
+                border: "1px solid #1E2D4A",
                 borderRadius: "8px",
-                color: "#e2e8f0",
-                fontSize: 12,
+                color: "#F8FAFC",
+                fontSize: "12px",
+                fontFamily: "monospace",
               }}
-              cursor={{ fill: "rgba(139, 92, 246, 0.08)" }}
+              cursor={{ fill: "rgba(37, 99, 235, 0.1)" }}
             />
             <Bar
               dataKey="count"
-              name="Applicants"
-              fill="#8b5cf6"
-              radius={[4, 4, 0, 0]}
+              name="Candidates"
+              fill="#2563EB"
+              radius={[3, 3, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -80,12 +86,17 @@ interface ApplicantsPerJobChartProps {
 export function ApplicantsPerJobChart({ data }: ApplicantsPerJobChartProps) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">
-        Applicants per Job (Top 5)
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+          Candidates per Job Posting
+        </h3>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+          Top 5 Positions
+        </span>
+      </div>
 
       {data.length === 0 ? (
-        <EmptyChartState label="No applications yet" />
+        <EmptyChartState label="No job postings with applications" />
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           <BarChart
@@ -95,42 +106,43 @@ export function ApplicantsPerJobChart({ data }: ApplicantsPerJobChartProps) {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#1e293b"
+              stroke="#182238"
               horizontal={false}
             />
             <XAxis
               type="number"
               allowDecimals={false}
-              tick={{ fill: "#64748b", fontSize: 11 }}
+              tick={{ fill: "#64748B", fontSize: 11, fontFamily: "monospace" }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               type="category"
               dataKey="jobTitle"
-              width={110}
-              tick={{ fill: "#94a3b8", fontSize: 11 }}
+              width={120}
+              tick={{ fill: "#94A3B8", fontSize: 11 }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(v: string) =>
-                v.length > 16 ? `${v.slice(0, 14)}…` : v
+                v.length > 15 ? `${v.slice(0, 13)}…` : v
               }
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #1e293b",
+                backgroundColor: "#090D16",
+                border: "1px solid #1E2D4A",
                 borderRadius: "8px",
-                color: "#e2e8f0",
-                fontSize: 12,
+                color: "#F8FAFC",
+                fontSize: "12px",
+                fontFamily: "monospace",
               }}
-              cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
+              cursor={{ fill: "rgba(6, 182, 212, 0.1)" }}
             />
             <Bar
               dataKey="count"
-              name="Applicants"
-              fill="#6366f1"
-              radius={[0, 4, 4, 0]}
+              name="Candidates"
+              fill="#06B6D4"
+              radius={[0, 3, 3, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -143,8 +155,8 @@ export function ApplicantsPerJobChart({ data }: ApplicantsPerJobChartProps) {
 
 function EmptyChartState({ label }: { label: string }) {
   return (
-    <div className="flex h-[220px] items-center justify-center">
-      <p className="text-sm text-slate-600 italic">{label}</p>
+    <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed border-[#182238] bg-[#07090E]/50">
+      <p className="text-xs font-mono text-slate-500">{label}</p>
     </div>
   );
 }

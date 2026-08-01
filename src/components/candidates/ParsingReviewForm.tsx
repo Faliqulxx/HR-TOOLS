@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2, Loader2, Save } from "lucide-react";
+import { Plus, Trash2, Loader2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -140,44 +140,44 @@ export function ParsingReviewForm({ candidate }: Props) {
   };
 
   const fieldClass =
-    "border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500";
-  const labelClass = "text-xs font-medium text-slate-400";
+    "border-[#1E2D4A] bg-[#090D16] text-slate-100 placeholder:text-slate-500 focus-visible:ring-blue-500 font-sans text-xs";
+  const labelClass = "text-xs font-mono font-bold text-slate-300 uppercase tracking-wider";
 
   return (
     <div className="space-y-6">
       {/* Contact Info */}
-      <Card className="border-slate-800 bg-slate-900/60">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base text-slate-200">
-            Contact Information
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
+          <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+            Candidate Contact &amp; Digital Profiles
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2 pt-5">
           <div className="md:col-span-2">
-            <label className={labelClass}>Full Name *</label>
+            <label className={labelClass}>Full Candidate Name *</label>
             <Input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="Candidate full name"
+              className={`mt-1.5 ${fieldClass}`}
+              placeholder="Candidate full legal name"
             />
           </div>
           <div>
-            <label className={labelClass}>Email</label>
+            <label className={labelClass}>Email Address</label>
             <Input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="email@example.com"
+              className={`mt-1.5 ${fieldClass} font-mono`}
+              placeholder="email@domain.com"
             />
           </div>
           <div>
-            <label className={labelClass}>Phone</label>
+            <label className={labelClass}>Phone Contact</label>
             <Input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="+62 812 ..."
+              className={`mt-1.5 ${fieldClass} font-mono`}
+              placeholder="+62 812 3456 7890"
             />
           </div>
           <div>
@@ -185,66 +185,68 @@ export function ParsingReviewForm({ candidate }: Props) {
             <Input
               value={linkedin}
               onChange={(e) => setLinkedin(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="linkedin.com/in/..."
+              className={`mt-1.5 ${fieldClass} font-mono`}
+              placeholder="linkedin.com/in/username"
             />
           </div>
           <div>
-            <label className={labelClass}>GitHub URL</label>
+            <label className={labelClass}>GitHub Profile</label>
             <Input
               value={github}
               onChange={(e) => setGithub(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="github.com/..."
+              className={`mt-1.5 ${fieldClass} font-mono`}
+              placeholder="github.com/username"
             />
           </div>
           <div className="md:col-span-2">
-            <label className={labelClass}>Portfolio URL</label>
+            <label className={labelClass}>Portfolio Website</label>
             <Input
               value={portfolio}
               onChange={(e) => setPortfolio(e.target.value)}
-              className={`mt-1 ${fieldClass}`}
-              placeholder="https://..."
+              className={`mt-1.5 ${fieldClass} font-mono`}
+              placeholder="https://portfolio-url.com"
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* Skills */}
-      <Card className="border-slate-800 bg-slate-900/60">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base text-slate-200">Skills</CardTitle>
+      {/* Skills Inventory */}
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
+          <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+            Parsed Skills Inventory
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 pt-5">
           <div className="flex gap-2">
             <Input
               value={skillInput}
               onChange={(e) => setSkillInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
               className={`flex-1 ${fieldClass}`}
-              placeholder="Type a skill and press Enter"
+              placeholder="Type a skill name and press Enter"
             />
             <Button
               type="button"
               variant="outline"
               onClick={addSkill}
-              className="border-slate-700 text-slate-400 hover:border-violet-500 hover:text-violet-400"
+              className="border-[#1E2D4A] bg-[#090D16] text-slate-300 hover:border-blue-500 hover:text-blue-400 font-mono text-xs gap-1"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4" /> Add Skill
             </Button>
           </div>
 
           {skills.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 pt-1">
               {skills.map((skill) => (
                 <Badge
                   key={skill}
-                  className="bg-violet-500/20 text-violet-300 border border-violet-500/30 gap-1 pr-1"
+                  className="bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono text-xs gap-1 pr-1.5"
                 >
                   {skill}
                   <button
                     onClick={() => removeSkill(skill)}
-                    className="hover:text-rose-300 transition-colors ml-0.5"
+                    className="hover:text-rose-400 transition-colors ml-0.5"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -252,76 +254,76 @@ export function ParsingReviewForm({ candidate }: Props) {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-600 italic">No skills added.</p>
+            <p className="text-xs font-mono text-slate-500 italic">No skills extracted yet.</p>
           )}
         </CardContent>
       </Card>
 
       {/* Education */}
-      <Card className="border-slate-800 bg-slate-900/60">
-        <CardHeader className="pb-4">
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-slate-200">
-              Education
+            <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+              Academic Education History
             </CardTitle>
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={addEducation}
-              className="text-slate-500 hover:text-violet-400 text-xs gap-1.5"
+              className="text-slate-400 hover:text-blue-400 font-mono text-xs gap-1.5"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-3.5 w-3.5" /> Add Record
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-5">
           {educations.length === 0 && (
-            <p className="text-sm text-slate-600 italic">No education entries.</p>
+            <p className="text-xs font-mono text-slate-500 italic">No education history recorded.</p>
           )}
           {educations.map((edu, i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-800 p-4 space-y-3 relative"
+              className="rounded-lg border border-[#182238] bg-[#090D16] p-4 space-y-3 relative"
             >
               <button
                 onClick={() => removeEducation(i)}
-                className="absolute top-3 right-3 text-slate-700 hover:text-rose-400 transition-colors"
+                className="absolute top-3 right-3 text-slate-500 hover:text-rose-400 transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className={labelClass}>Institution *</label>
+                  <label className={labelClass}>Institution Name *</label>
                   <Input
                     value={edu.institution}
                     onChange={(e) =>
                       updateEducation(i, "institution", e.target.value)
                     }
-                    className={`mt-1 ${fieldClass}`}
-                    placeholder="University name"
+                    className={`mt-1.5 ${fieldClass}`}
+                    placeholder="University or Institution name"
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Degree</label>
+                  <label className={labelClass}>Degree / Qualification</label>
                   <Input
                     value={edu.degree ?? ""}
                     onChange={(e) =>
                       updateEducation(i, "degree", e.target.value || null)
                     }
-                    className={`mt-1 ${fieldClass}`}
-                    placeholder="e.g. Bachelor"
+                    className={`mt-1.5 ${fieldClass}`}
+                    placeholder="e.g. Bachelor of Science"
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Major</label>
+                  <label className={labelClass}>Major / Specialization</label>
                   <Input
                     value={edu.major ?? ""}
                     onChange={(e) =>
                       updateEducation(i, "major", e.target.value || null)
                     }
-                    className={`mt-1 ${fieldClass}`}
-                    placeholder="e.g. Computer Science"
+                    className={`mt-1.5 ${fieldClass}`}
+                    placeholder="e.g. Informatics Engineering"
                   />
                 </div>
                 <div>
@@ -336,7 +338,7 @@ export function ParsingReviewForm({ candidate }: Props) {
                         e.target.value ? parseInt(e.target.value) : null
                       )
                     }
-                    className={`mt-1 ${fieldClass}`}
+                    className={`mt-1.5 ${fieldClass} font-mono`}
                     placeholder="2018"
                   />
                 </div>
@@ -352,12 +354,12 @@ export function ParsingReviewForm({ candidate }: Props) {
                         e.target.value ? parseInt(e.target.value) : null
                       )
                     }
-                    className={`mt-1 ${fieldClass}`}
+                    className={`mt-1.5 ${fieldClass} font-mono`}
                     placeholder="2022"
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>GPA</label>
+                  <label className={labelClass}>GPA Score</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -369,8 +371,8 @@ export function ParsingReviewForm({ candidate }: Props) {
                         e.target.value ? parseFloat(e.target.value) : null
                       )
                     }
-                    className={`mt-1 ${fieldClass}`}
-                    placeholder="3.75"
+                    className={`mt-1.5 ${fieldClass} font-mono`}
+                    placeholder="3.85"
                   />
                 </div>
               </div>
@@ -380,65 +382,63 @@ export function ParsingReviewForm({ candidate }: Props) {
       </Card>
 
       {/* Experience */}
-      <Card className="border-slate-800 bg-slate-900/60">
-        <CardHeader className="pb-4">
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-slate-200">
-              Work Experience
+            <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+              Employment &amp; Project Experience
             </CardTitle>
             <Button
               type="button"
               variant="ghost"
               size="sm"
               onClick={addExperience}
-              className="text-slate-500 hover:text-violet-400 text-xs gap-1.5"
+              className="text-slate-400 hover:text-blue-400 font-mono text-xs gap-1.5"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-3.5 w-3.5" /> Add Position
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pt-5">
           {experiences.length === 0 && (
-            <p className="text-sm text-slate-600 italic">
-              No experience entries.
-            </p>
+            <p className="text-xs font-mono text-slate-500 italic">No experience records found.</p>
           )}
           {experiences.map((exp, i) => (
             <div
               key={i}
-              className="rounded-lg border border-slate-800 p-4 space-y-3 relative"
+              className="rounded-lg border border-[#182238] bg-[#090D16] p-4 space-y-3 relative"
             >
               <button
                 onClick={() => removeExperience(i)}
-                className="absolute top-3 right-3 text-slate-700 hover:text-rose-400 transition-colors"
+                className="absolute top-3 right-3 text-slate-500 hover:text-rose-400 transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={labelClass}>Company *</label>
+                  <label className={labelClass}>Company / Organization *</label>
                   <Input
                     value={exp.company}
                     onChange={(e) =>
                       updateExperience(i, "company", e.target.value)
                     }
-                    className={`mt-1 ${fieldClass}`}
+                    className={`mt-1.5 ${fieldClass}`}
                     placeholder="Company name"
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Position *</label>
+                  <label className={labelClass}>Role Position *</label>
                   <Input
                     value={exp.position}
                     onChange={(e) =>
                       updateExperience(i, "position", e.target.value)
                     }
-                    className={`mt-1 ${fieldClass}`}
-                    placeholder="Job title"
+                    className={`mt-1.5 ${fieldClass}`}
+                    placeholder="Role title"
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className={labelClass}>Description</label>
+                  <label className={labelClass}>Key Responsibilities</label>
                   <Textarea
                     value={exp.description ?? ""}
                     onChange={(e) =>
@@ -449,11 +449,11 @@ export function ParsingReviewForm({ candidate }: Props) {
                       )
                     }
                     rows={2}
-                    className={`mt-1 ${fieldClass} resize-none`}
-                    placeholder="Brief description of responsibilities..."
+                    className={`mt-1.5 ${fieldClass} resize-none`}
+                    placeholder="Summary of responsibilities and achievements..."
                   />
                 </div>
-                <div className="col-span-2 flex items-center gap-2">
+                <div className="col-span-2 flex items-center gap-2 pt-1">
                   <input
                     type="checkbox"
                     id={`current-${i}`}
@@ -461,13 +461,13 @@ export function ParsingReviewForm({ candidate }: Props) {
                     onChange={(e) =>
                       updateExperience(i, "isCurrent", e.target.checked)
                     }
-                    className="h-4 w-4 rounded border-slate-700 bg-slate-900 accent-violet-500"
+                    className="h-4 w-4 rounded border-[#1E2D4A] bg-[#090D16] accent-blue-500"
                   />
                   <label
                     htmlFor={`current-${i}`}
-                    className="text-xs text-slate-400"
+                    className="text-xs font-mono text-slate-300"
                   >
-                    Currently working here
+                    Active Employment Role
                   </label>
                 </div>
               </div>
@@ -476,42 +476,23 @@ export function ParsingReviewForm({ candidate }: Props) {
         </CardContent>
       </Card>
 
-      <Separator className="bg-slate-800" />
+      <Separator className="bg-[#182238]" />
 
-      {/* Save */}
+      {/* Save Button */}
       <div className="flex justify-end">
         <Button
           onClick={handleSave}
           disabled={isPending || !fullName.trim()}
-          className="bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-900/30 gap-2 min-w-[160px]"
+          className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-semibold shadow-md shadow-blue-900/30 gap-2 min-w-[180px]"
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Save className="h-4 w-4" />
           )}
-          {isPending ? "Saving..." : "Confirm & Save"}
+          {isPending ? "Updating Candidate..." : "Verify & Save Candidate"}
         </Button>
       </div>
     </div>
-  );
-}
-
-// Missing import
-function X({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   );
 }

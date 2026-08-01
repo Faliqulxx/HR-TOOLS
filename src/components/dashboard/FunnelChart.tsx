@@ -15,12 +15,12 @@ interface FunnelChartProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "#64748b",
-  screening: "#3b82f6",
-  interview: "#8b5cf6",
-  offered: "#f59e0b",
-  hired: "#10b981",
-  rejected: "#ef4444",
+  new: "#475569",
+  screening: "#06B6D4",
+  interview: "#2563EB",
+  offered: "#F59E0B",
+  hired: "#10B981",
+  rejected: "#F43F5E",
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -45,11 +45,12 @@ function renderCustomLabel(props: PieLabelRenderProps) {
     <text
       x={x}
       y={y}
-      fill="white"
+      fill="#FFFFFF"
       textAnchor="middle"
       dominantBaseline="central"
       fontSize={11}
-      fontWeight={600}
+      fontWeight={700}
+      fontFamily="monospace"
     >
       {`${((percent ?? 0) * 100).toFixed(0)}%`}
     </text>
@@ -60,18 +61,23 @@ export function FunnelChart({ data }: FunnelChartProps) {
   const labeled = data.map((d) => ({
     ...d,
     label: STATUS_LABELS[d.status] ?? d.status,
-    color: STATUS_COLORS[d.status] ?? "#64748b",
+    color: STATUS_COLORS[d.status] ?? "#475569",
   }));
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">
-        Application Status Funnel
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+          Candidate Pipeline Stage
+        </h3>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          Status Funnel
+        </span>
+      </div>
 
       {data.length === 0 ? (
-        <div className="flex h-[260px] items-center justify-center">
-          <p className="text-sm text-slate-600 italic">No applications yet</p>
+        <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-[#182238] bg-[#07090E]/50">
+          <p className="text-xs font-mono text-slate-500">No application funnel data</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
@@ -80,30 +86,35 @@ export function FunnelChart({ data }: FunnelChartProps) {
               data={labeled}
               cx="50%"
               cy="50%"
-              outerRadius={90}
+              outerRadius={85}
+              innerRadius={35}
+              paddingAngle={3}
               dataKey="count"
               nameKey="label"
               labelLine={false}
               label={renderCustomLabel}
             >
               {labeled.map((entry, index) => (
-                <Cell key={index} fill={entry.color} stroke="transparent" />
+                <Cell key={index} fill={entry.color} stroke="#07090E" strokeWidth={2} />
               ))}
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #1e293b",
+                backgroundColor: "#090D16",
+                border: "1px solid #1E2D4A",
                 borderRadius: "8px",
-                color: "#e2e8f0",
-                fontSize: 12,
+                color: "#F8FAFC",
+                fontSize: "12px",
+                fontFamily: "monospace",
               }}
             />
             <Legend
               iconType="circle"
-              iconSize={8}
+              iconSize={7}
               formatter={(value) => (
-                <span style={{ color: "#94a3b8", fontSize: 11 }}>{value}</span>
+                <span style={{ color: "#94A3B8", fontSize: "11px", fontFamily: "monospace" }}>
+                  {value}
+                </span>
               )}
             />
           </PieChart>

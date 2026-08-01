@@ -1,12 +1,22 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, AlertTriangle, CheckCircle2, FileText } from "lucide-react";
 import { getCandidateById } from "@/lib/actions/candidate.actions";
 import { ParsingReviewForm } from "@/components/candidates/ParsingReviewForm";
 
-export const metadata = {
-  title: "Review Parsing — HR Tools",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const candidate = await getCandidateById(id);
+  return {
+    title: candidate
+      ? `Review Data for ${candidate.fullName} — Signal HR`
+      : "Review Parsing — Signal HR",
+  };
+}
 
 export default async function ReviewParsingPage({
   params,
@@ -20,59 +30,59 @@ export default async function ReviewParsingPage({
   const isAlreadyParsed = candidate.parsingStatus === "parsed";
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto">
-      {/* Breadcrumb */}
+    <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-6">
+      {/* Breadcrumb Navigation */}
       <Link
         href="/candidates/upload"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 transition-colors"
       >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Upload
+        <ChevronLeft className="h-3.5 w-3.5" />
+        Return to Ingestion Console
       </Link>
 
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">
-          Review Parsed Resume
+      {/* Header Banner */}
+      <div className="border-b border-[#182238] pb-6">
+        <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
+          Entity Parsing Audit Console
         </h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Verify and correct the AI-extracted data below, then confirm to save.
+        <p className="text-slate-400 text-xs font-mono mt-0.5">
+          Verify and audit AI-extracted candidate metadata before indexing.
         </p>
       </div>
 
-      {/* Status Banner */}
+      {/* Status Alert Banner */}
       {isAlreadyParsed ? (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 mb-6">
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3.5">
           <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
           <div>
-            <p className="text-sm font-medium text-emerald-300">
-              Already confirmed
+            <p className="text-xs font-mono font-bold text-emerald-300 uppercase">
+              Parsed &amp; Verified Entity Data
             </p>
-            <p className="text-xs text-emerald-400/70">
-              This resume has been reviewed. You can still make further edits.
+            <p className="text-xs font-sans text-emerald-400/80 mt-0.5">
+              This candidate dossier has been verified. You may apply further manual corrections below.
             </p>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 mb-6">
-          <AlertCircle className="h-5 w-5 text-amber-400 shrink-0" />
+        <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3.5">
+          <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
           <div>
-            <p className="text-sm font-medium text-amber-300">
-              Needs review
+            <p className="text-xs font-mono font-bold text-amber-300 uppercase">
+              Extraction Review Required
             </p>
-            <p className="text-xs text-amber-400/70">
-              The AI parser couldn&apos;t confidently extract all fields. Please
-              review and correct the data below.
+            <p className="text-xs font-sans text-amber-400/80 mt-0.5">
+              The automated entity parser requires HR verification for incomplete contact or experience fields.
             </p>
           </div>
         </div>
       )}
 
-      {/* File info */}
-      <div className="mb-6 flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/50 px-4 py-3">
+      {/* Source File Spec */}
+      <div className="flex items-center gap-3 rounded-xl border border-[#182238] bg-[#0E131F] px-4 py-3">
+        <FileText className="h-4 w-4 text-blue-400 shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-500">Source file</p>
-          <p className="text-sm text-slate-300 truncate">
+          <p className="text-[10px] font-mono font-bold text-slate-400 uppercase">Original Document File</p>
+          <p className="text-xs font-semibold text-slate-200 truncate">
             {candidate.resumeFileName}
           </p>
         </div>
@@ -80,9 +90,9 @@ export default async function ReviewParsingPage({
           href={candidate.resumeFileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-xs text-violet-400 hover:text-violet-300 underline-offset-2 hover:underline transition-colors shrink-0"
+          className="text-xs font-mono text-blue-400 hover:text-blue-300 underline-offset-2 hover:underline transition-colors shrink-0"
         >
-          View File
+          Open Document PDF
         </a>
       </div>
 

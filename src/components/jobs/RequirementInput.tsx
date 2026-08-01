@@ -47,70 +47,67 @@ export function RequirementInput({
   return (
     <div className="space-y-3">
       {requirements.length === 0 && (
-        <p className="text-sm text-slate-500 italic">
-          No requirements added yet. Click &quot;Add Skill&quot; to start.
-        </p>
+        <div className="p-4 rounded-lg border border-dashed border-[#182238] bg-[#090D16] text-center">
+          <p className="text-xs font-mono text-slate-400">
+            No skill criteria added yet. Click &quot;Add Requirement Criteria&quot; below to add target skills.
+          </p>
+        </div>
       )}
 
       {requirements.map((req, index) => (
         <div
           key={index}
-          className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/50 p-3"
+          className="flex items-center gap-3 rounded-lg border border-[#182238] bg-[#0E131F] p-3 shadow-sm"
         >
-          {/* Skill Name */}
+          {/* Skill Name Input */}
           <Input
-            placeholder="Skill name (e.g. Python, Figma)"
+            placeholder="Skill name (e.g. Python, PostgreSQL, React)"
             value={req.skillName}
             onChange={(e) => updateRequirement(index, "skillName", e.target.value)}
-            className="flex-1 border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500"
+            className="flex-1 border-[#1E2D4A] bg-[#090D16] text-slate-100 font-mono text-xs placeholder:text-slate-500 focus-visible:ring-blue-500"
           />
 
-          {/* Mandatory/Nice-to-have toggle */}
+          {/* Mandatory/Optional Toggle */}
           <button
             type="button"
             onClick={() => updateRequirement(index, "isMandatory", !req.isMandatory)}
             className="shrink-0"
           >
             {req.isMandatory ? (
-              <Badge className="cursor-pointer bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 transition-colors">
-                Mandatory
+              <Badge className="cursor-pointer bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-mono text-[10px] font-bold">
+                MANDATORY (2x)
               </Badge>
             ) : (
-              <Badge className="cursor-pointer bg-slate-700/50 text-slate-400 border border-slate-700 hover:bg-slate-700 transition-colors">
-                Nice-to-have
+              <Badge className="cursor-pointer bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700 font-mono text-[10px]">
+                NICE-TO-HAVE (1x)
               </Badge>
             )}
           </button>
 
-          {/* Weight indicator */}
-          <span className="text-xs text-slate-600 w-14 text-center shrink-0">
-            weight: {req.weight}
-          </span>
-
-          {/* Remove */}
+          {/* Remove Button */}
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={() => removeRequirement(index)}
-            className="shrink-0 text-slate-600 hover:text-rose-400 hover:bg-rose-500/10"
+            className="shrink-0 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       ))}
 
-      {error && <p className="text-xs text-rose-400">{error}</p>}
+      {error && <p className="text-xs font-mono text-rose-400">{error}</p>}
 
       <Button
         type="button"
         variant="outline"
         size="sm"
         onClick={addRequirement}
-        className="border-dashed border-slate-700 text-slate-400 hover:border-violet-500 hover:text-violet-400 hover:bg-violet-500/5"
+        className="border-dashed border-[#1E2D4A] bg-[#090D16] text-slate-300 hover:border-blue-500 hover:text-blue-400 hover:bg-blue-500/10 font-mono text-xs gap-2"
       >
-        <Plus className="h-4 w-4 mr-2" />
-        Add Skill Requirement
+        <Plus className="h-4 w-4 text-blue-400" />
+        Add Requirement Criteria
       </Button>
     </div>
   );

@@ -1,10 +1,11 @@
 import {
   Users,
   UserPlus,
-  CheckCircle2,
+  ShieldCheck,
   XCircle,
   Briefcase,
-  TrendingUp,
+  Activity,
+  Sparkles,
 } from "lucide-react";
 import { getDashboardStats, getChartData } from "@/lib/actions/dashboard.actions";
 import { KpiCard } from "@/components/dashboard/KpiCard";
@@ -13,11 +14,10 @@ import { SkillsChart } from "@/components/dashboard/SkillsChart";
 import { FunnelChart } from "@/components/dashboard/FunnelChart";
 
 export const metadata = {
-  title: "Dashboard — HR Tools",
-  description: "HR recruitment overview with KPIs and charts",
+  title: "Recruitment Console — Signal HR",
+  description: "Executive HR analytics console with real-time candidate match telemetry.",
 };
 
-// Revalidate every 60 seconds so charts stay fresh
 export const revalidate = 60;
 
 export default async function DashboardPage() {
@@ -28,77 +28,93 @@ export default async function DashboardPage() {
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-slate-400 text-sm mt-1">
-          Recruitment pipeline overview — data updates every minute.
-        </p>
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-[#182238] pb-6">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs font-mono font-bold uppercase tracking-widest text-blue-400">
+              Recruitment Operations
+            </span>
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-ping" />
+          </div>
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-100 tracking-tight">
+            Intelligence Overview
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">
+            Real-time candidate evaluation telemetry and matching pipeline metrics.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#1E2D4A] bg-[#0E131F] text-xs font-mono text-slate-300">
+            <Activity className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
+            <span>Auto-Refresh 60s</span>
+          </div>
+        </div>
       </div>
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         <KpiCard
-          label="Total Applicants"
+          label="Total Candidates"
           value={stats.totalApplicants}
           icon={Users}
-          color="violet"
-          description="All uploaded candidates"
+          color="blue"
+          description="Processed resume database"
         />
         <KpiCard
-          label="New Today"
+          label="Uploaded Today"
           value={stats.newResumesToday}
           icon={UserPlus}
-          color="blue"
-          description="Resumes uploaded today"
+          color="cyan"
+          description="New candidate files"
         />
         <KpiCard
-          label="Passed Screening"
+          label="High Fit Candidates"
           value={stats.passedScreening}
-          icon={CheckCircle2}
+          icon={ShieldCheck}
           color="emerald"
           description="Match score ≥ 70%"
         />
         <KpiCard
-          label="Rejected"
+          label="Rejected Pipeline"
           value={stats.rejected}
           icon={XCircle}
           color="rose"
-          description="Applications marked rejected"
+          description="Unmatched/Archived"
         />
         <KpiCard
-          label="Active Jobs"
+          label="Active Positions"
           value={stats.activeJobs}
           icon={Briefcase}
           color="amber"
-          description="Open job postings"
+          description="Open job requisitions"
         />
         <KpiCard
-          label="Avg Match Score"
+          label="Mean Match Index"
           value={stats.avgMatchScore}
-          icon={TrendingUp}
+          icon={Sparkles}
           color="slate"
           suffix="%"
-          description="Average across all applications"
+          description="System-wide match average"
         />
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+      {/* Analytics Matrix Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-[#182238] bg-[#0E131F]/90 p-5 shadow-sm">
           <ApplicantsChart data={charts.applicantsPerDay} />
         </div>
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <div className="rounded-xl border border-[#182238] bg-[#0E131F]/90 p-5 shadow-sm">
           <ApplicantsPerJobChart data={charts.applicantsPerJob} />
         </div>
       </div>
 
-      {/* Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-[#182238] bg-[#0E131F]/90 p-5 shadow-sm">
           <SkillsChart data={charts.topSkills} />
         </div>
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+        <div className="rounded-xl border border-[#182238] bg-[#0E131F]/90 p-5 shadow-sm">
           <FunnelChart data={charts.statusFunnel} />
         </div>
       </div>

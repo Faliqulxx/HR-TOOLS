@@ -9,6 +9,7 @@ import {
   Clock,
   Calendar,
   DollarSign,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,11 +17,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getJobById } from "@/lib/actions/job.actions";
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  draft: "bg-slate-700/50 text-slate-400 border border-slate-700",
-  active: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-  closed: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
-} as never;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const job = await getJobById(id);
+  return {
+    title: job ? `${job.title} — Signal HR` : "Requisition Detail — Signal HR",
+  };
+}
+
+const statusConfig: Record<string, string> = {
+  draft: "bg-slate-800 text-slate-300 border border-slate-700 font-mono",
+  active: "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono",
+  closed: "bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono",
+};
 
 const employmentTypeLabel: Record<string, string> = {
   "full-time": "Full-time",
@@ -47,46 +60,47 @@ export default async function JobDetailPage({
   const job = await getJobById(id);
   if (!job) notFound();
 
-  const statusClass =
-    (statusConfig[job.status] as unknown as string) ??
-    (statusConfig.draft as unknown as string);
+  const statusClass = statusConfig[job.status] ?? statusConfig.draft;
 
   return (
-    <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-      {/* Breadcrumb */}
+    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6">
+      {/* Breadcrumb Navigation */}
       <Link
         href="/jobs"
-        className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-slate-200 transition-colors"
       >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Jobs
+        <ChevronLeft className="h-3.5 w-3.5" />
+        Return to Requisitions List
       </Link>
 
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8 gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-white">{job.title}</h1>
-            <Badge className={statusClass}>
-              {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+      {/* Header Requisition Spec */}
+      <div className="rounded-xl border border-[#182238] bg-[#0E131F] p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-extrabold text-slate-100 tracking-tight">
+              {job.title}
+            </h1>
+            <Badge className={`${statusClass} text-[10px]`}>
+              {job.status.toUpperCase()}
             </Badge>
           </div>
-          <div className="flex flex-wrap gap-4 text-sm text-slate-400">
+
+          <div className="flex flex-wrap gap-4 text-xs font-mono text-slate-400 pt-1">
             <span className="flex items-center gap-1.5">
-              <Building2 className="h-4 w-4 text-slate-600" />
+              <Building2 className="h-3.5 w-3.5 text-slate-400" />
               {job.department}
             </span>
             <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-slate-600" />
+              <MapPin className="h-3.5 w-3.5 text-slate-400" />
               {job.location}
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-slate-600" />
+              <Clock className="h-3.5 w-3.5 text-slate-400" />
               {employmentTypeLabel[job.employmentType] ?? job.employmentType}
             </span>
             {job.deadline && (
               <span className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4 text-slate-600" />
+                <Calendar className="h-3.5 w-3.5 text-slate-400" />
                 Deadline:{" "}
                 {new Date(job.deadline).toLocaleDateString("en-US", {
                   month: "short",
@@ -96,63 +110,64 @@ export default async function JobDetailPage({
               </span>
             )}
             {(job.salaryMin || job.salaryMax) && (
-              <span className="flex items-center gap-1.5">
-                <DollarSign className="h-4 w-4 text-slate-600" />
+              <span className="flex items-center gap-1.5 font-mono">
+                <DollarSign className="h-3.5 w-3.5 text-slate-400" />
                 {formatSalary(job.salaryMin)} – {formatSalary(job.salaryMax)}
               </span>
             )}
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 shrink-0">
+        {/* Action Controls */}
+        <div className="flex gap-2.5 shrink-0">
           <Link href={`/jobs/${job.id}/candidates`}>
-            <Button
-              variant="outline"
-              className="border-slate-700 text-slate-300 hover:bg-slate-800 gap-2"
-            >
+            <Button className="bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-semibold shadow-md shadow-blue-900/30 gap-2">
               <Users className="h-4 w-4" />
-              View Candidates ({job._count.applications})
+              Candidate Leaderboard ({job._count.applications})
             </Button>
           </Link>
           <Link href={`/jobs/${job.id}/edit`}>
-            <Button className="bg-violet-600 hover:bg-violet-700 text-white gap-2">
-              <Pencil className="h-4 w-4" />
-              Edit
+            <Button
+              variant="outline"
+              className="border-[#1E2D4A] bg-[#090D16] text-slate-300 hover:bg-[#141B2D] font-mono text-xs gap-2"
+            >
+              <Pencil className="h-4 w-4 text-blue-400" />
+              Edit Specs
             </Button>
           </Link>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Description */}
+        {/* Requisition Scope */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="border-slate-800 bg-slate-900/60">
-            <CardHeader>
-              <CardTitle className="text-base text-slate-200">
-                Job Description
+          <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+            <CardHeader className="pb-4 border-b border-[#182238]">
+              <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                Position Overview &amp; Scope
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-wrap">
+            <CardContent className="pt-4">
+              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-sans">
                 {job.description}
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Requirements */}
+        {/* Evaluation Target Matrix */}
         <div>
-          <Card className="border-slate-800 bg-slate-900/60">
-            <CardHeader>
-              <CardTitle className="text-base text-slate-200">
-                Skill Requirements
+          <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+            <CardHeader className="pb-4 border-b border-[#182238]">
+              <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <Target className="h-4 w-4 text-blue-400" />
+                Target Criteria Matrix
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="pt-4 space-y-2.5">
               {job.requirements.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">
-                  No requirements defined.
+                <p className="text-xs font-mono text-slate-500 italic">
+                  No criteria defined for this job.
                 </p>
               ) : (
                 <>
@@ -161,31 +176,31 @@ export default async function JobDetailPage({
                     .map((req) => (
                       <div
                         key={req.id}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between py-1.5 border-b border-[#182238] last:border-0"
                       >
-                        <span className="text-sm text-slate-300">
+                        <span className="text-xs font-mono font-semibold text-slate-200">
                           {req.skillName}
                         </span>
-                        <Badge className="bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px]">
-                          Mandatory
+                        <Badge className="bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono text-[9px] font-bold">
+                          MANDATORY (2x)
                         </Badge>
                       </div>
                     ))}
                   {job.requirements.filter((r) => r.isMandatory).length > 0 &&
                     job.requirements.filter((r) => !r.isMandatory).length >
-                      0 && <Separator className="bg-slate-800 my-3" />}
+                      0 && <Separator className="bg-[#182238] my-2" />}
                   {job.requirements
                     .filter((r) => !r.isMandatory)
                     .map((req) => (
                       <div
                         key={req.id}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between py-1.5 border-b border-[#182238] last:border-0"
                       >
-                        <span className="text-sm text-slate-400">
+                        <span className="text-xs font-mono text-slate-400">
                           {req.skillName}
                         </span>
-                        <Badge className="bg-slate-700/50 text-slate-500 border border-slate-700 text-[10px]">
-                          Nice-to-have
+                        <Badge className="bg-slate-800 text-slate-400 border border-slate-700 font-mono text-[9px]">
+                          OPTIONAL (1x)
                         </Badge>
                       </div>
                     ))}

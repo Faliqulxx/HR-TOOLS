@@ -21,7 +21,7 @@ import {
   type JobFormData,
   type JobRequirementFormData,
 } from "@/lib/validations/job.schema";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, Sparkles } from "lucide-react";
 
 interface JobFormProps {
   initialData?: JobFormData & { id?: string };
@@ -89,41 +89,41 @@ export function JobForm({ initialData, mode }: JobFormProps) {
         router.push("/jobs");
         router.refresh();
       } catch {
-        setServerError("An unexpected error occurred. Please try again.");
+        setServerError("An unexpected error occurred. Please verify form inputs and try again.");
       }
     });
   };
 
   const fieldClass =
-    "border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-600 focus-visible:ring-violet-500";
-  const labelClass = "text-sm font-medium text-slate-300";
-  const errorClass = "text-xs text-rose-400 mt-1";
+    "border-[#1E2D4A] bg-[#090D16] text-slate-100 placeholder:text-slate-500 focus-visible:ring-blue-500 font-sans text-xs";
+  const labelClass = "text-xs font-mono font-bold text-slate-300 uppercase tracking-wider";
+  const errorClass = "text-xs font-mono text-rose-400 mt-1";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {serverError && (
-        <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-400">
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs font-mono text-rose-400">
           {serverError}
         </div>
       )}
 
-      {/* Basic Info */}
-      <Card className="border-slate-800 bg-slate-900/60 backdrop-blur">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-base font-semibold text-slate-200">
-            Basic Information
+      {/* Basic Requisition Specs */}
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
+          <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+            1. Requisition Specification
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-5 md:grid-cols-2 pt-5">
           {/* Title */}
           <div className="md:col-span-2">
             <label className={labelClass}>
-              Job Title <span className="text-rose-400">*</span>
+              Requisition Title <span className="text-rose-400">*</span>
             </label>
             <Input
               value={formData.title}
               onChange={(e) => updateField("title", e.target.value)}
-              placeholder="e.g. Senior Frontend Engineer"
+              placeholder="e.g. Senior Backend Engineer (Node.js/PostgreSQL)"
               className={`mt-1.5 ${fieldClass}`}
             />
             {errors.title && <p className={errorClass}>{errors.title[0]}</p>}
@@ -137,7 +137,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
             <Input
               value={formData.department}
               onChange={(e) => updateField("department", e.target.value)}
-              placeholder="e.g. Engineering"
+              placeholder="e.g. Core Engineering"
               className={`mt-1.5 ${fieldClass}`}
             />
             {errors.department && (
@@ -153,7 +153,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
             <Input
               value={formData.location}
               onChange={(e) => updateField("location", e.target.value)}
-              placeholder="e.g. Jakarta / Remote"
+              placeholder="e.g. Jakarta, ID / Remote"
               className={`mt-1.5 ${fieldClass}`}
             />
             {errors.location && (
@@ -178,7 +178,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
               <SelectTrigger className={`mt-1.5 ${fieldClass}`}>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
-              <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
+              <SelectContent className="border-[#1E2D4A] bg-[#0E131F] text-slate-100 font-mono text-xs">
                 <SelectItem value="full-time">Full-time</SelectItem>
                 <SelectItem value="part-time">Part-time</SelectItem>
                 <SelectItem value="contract">Contract</SelectItem>
@@ -192,7 +192,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
 
           {/* Deadline */}
           <div>
-            <label className={labelClass}>Application Deadline</label>
+            <label className={labelClass}>Requisition Deadline</label>
             <Input
               type="date"
               value={formData.deadline ?? ""}
@@ -201,7 +201,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
             />
           </div>
 
-          {/* Salary */}
+          {/* Salary Min */}
           <div>
             <label className={labelClass}>Salary Min (IDR)</label>
             <Input
@@ -213,11 +213,12 @@ export function JobForm({ initialData, mode }: JobFormProps) {
                   e.target.value ? Number(e.target.value) : null
                 )
               }
-              placeholder="e.g. 8000000"
-              className={`mt-1.5 ${fieldClass}`}
+              placeholder="e.g. 12000000"
+              className={`mt-1.5 ${fieldClass} font-mono`}
             />
           </div>
 
+          {/* Salary Max */}
           <div>
             <label className={labelClass}>Salary Max (IDR)</label>
             <Input
@@ -229,21 +230,21 @@ export function JobForm({ initialData, mode }: JobFormProps) {
                   e.target.value ? Number(e.target.value) : null
                 )
               }
-              placeholder="e.g. 15000000"
-              className={`mt-1.5 ${fieldClass}`}
+              placeholder="e.g. 20000000"
+              className={`mt-1.5 ${fieldClass} font-mono`}
             />
           </div>
 
           {/* Description */}
           <div className="md:col-span-2">
             <label className={labelClass}>
-              Job Description <span className="text-rose-400">*</span>
+              Role Description & Context <span className="text-rose-400">*</span>
             </label>
             <Textarea
               value={formData.description}
               onChange={(e) => updateField("description", e.target.value)}
-              placeholder="Describe the role, responsibilities, and what you're looking for..."
-              rows={6}
+              placeholder="Provide job scope, key responsibilities, and team context..."
+              rows={5}
               className={`mt-1.5 ${fieldClass} resize-none`}
             />
             {errors.description && (
@@ -253,20 +254,20 @@ export function JobForm({ initialData, mode }: JobFormProps) {
         </CardContent>
       </Card>
 
-      {/* Requirements */}
-      <Card className="border-slate-800 bg-slate-900/60 backdrop-blur">
-        <CardHeader className="pb-4">
-          <div>
-            <CardTitle className="text-base font-semibold text-slate-200">
-              Skill Requirements
+      {/* Target Criteria */}
+      <Card className="border-[#182238] bg-[#0E131F] shadow-sm">
+        <CardHeader className="pb-4 border-b border-[#182238]">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-blue-400" />
+              2. Criteria Evaluation Target Matrix
             </CardTitle>
-            <p className="text-xs text-slate-500 mt-1">
-              Click a badge to toggle between Mandatory (weight 2) and
-              Nice-to-have (weight 1).
-            </p>
+            <span className="text-[10px] font-mono text-slate-400">
+              Mandatory = Weight 2x | Nice-to-have = Weight 1x
+            </span>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           <RequirementInput
             requirements={formData.requirements as JobRequirementFormData[]}
             onChange={(reqs) => updateField("requirements", reqs)}
@@ -275,7 +276,7 @@ export function JobForm({ initialData, mode }: JobFormProps) {
         </CardContent>
       </Card>
 
-      <Separator className="bg-slate-800" />
+      <Separator className="bg-[#182238]" />
 
       {/* Actions */}
       <div className="flex items-center justify-between">
@@ -283,14 +284,14 @@ export function JobForm({ initialData, mode }: JobFormProps) {
           type="button"
           variant="ghost"
           onClick={() => router.back()}
-          className="text-slate-400 hover:text-slate-200"
+          className="text-slate-400 hover:text-slate-200 font-mono text-xs"
         >
           Cancel
         </Button>
         <Button
           type="submit"
           disabled={isPending}
-          className="bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-900/30 min-w-[140px]"
+          className="bg-blue-600 text-white hover:bg-blue-500 font-mono text-xs font-semibold shadow-md shadow-blue-900/30 min-w-[160px]"
         >
           {isPending ? (
             <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -298,10 +299,10 @@ export function JobForm({ initialData, mode }: JobFormProps) {
             <Save className="h-4 w-4 mr-2" />
           )}
           {isPending
-            ? "Saving..."
+            ? "Executing..."
             : mode === "create"
-              ? "Create Job"
-              : "Save Changes"}
+              ? "Create Job Requisition"
+              : "Save Requisition Changes"}
         </Button>
       </div>
     </form>

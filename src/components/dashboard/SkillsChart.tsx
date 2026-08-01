@@ -15,24 +15,28 @@ interface SkillsChartProps {
   data: { skill: string; count: number }[];
 }
 
-// Gradient palette for bars
+// Precision palette: Teal -> Cyan -> Blue -> Slate
 const BAR_COLORS = [
-  "#8b5cf6", "#7c3aed", "#6d28d9",
-  "#4f46e5", "#4338ca", "#3730a3",
-  "#2563eb", "#1d4ed8", "#1e40af",
-  "#1e3a8a",
+  "#10B981", "#059669", "#06B6D4", "#0284C7",
+  "#2563EB", "#1D4ED8", "#3B82F6", "#475569",
+  "#334155", "#1E293B",
 ];
 
 export function SkillsChart({ data }: SkillsChartProps) {
   return (
     <div>
-      <h3 className="text-sm font-semibold text-slate-200 mb-4">
-        Top Skills Across Candidates
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+          Top Extracted Candidate Skills
+        </h3>
+        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          Top 10 Frequency
+        </span>
+      </div>
 
       {data.length === 0 ? (
-        <div className="flex h-[260px] items-center justify-center">
-          <p className="text-sm text-slate-600 italic">No skills data yet</p>
+        <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed border-[#182238] bg-[#07090E]/50">
+          <p className="text-xs font-mono text-slate-500">No skill data extracted yet</p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
@@ -42,12 +46,12 @@ export function SkillsChart({ data }: SkillsChartProps) {
           >
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#1e293b"
+              stroke="#182238"
               vertical={false}
             />
             <XAxis
               dataKey="skill"
-              tick={{ fill: "#64748b", fontSize: 10 }}
+              tick={{ fill: "#94A3B8", fontSize: 10, fontFamily: "sans-serif" }}
               axisLine={false}
               tickLine={false}
               angle={-35}
@@ -56,21 +60,22 @@ export function SkillsChart({ data }: SkillsChartProps) {
             />
             <YAxis
               allowDecimals={false}
-              tick={{ fill: "#64748b", fontSize: 11 }}
+              tick={{ fill: "#64748B", fontSize: 11, fontFamily: "monospace" }}
               axisLine={false}
               tickLine={false}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: "#0f172a",
-                border: "1px solid #1e293b",
+                backgroundColor: "#090D16",
+                border: "1px solid #1E2D4A",
                 borderRadius: "8px",
-                color: "#e2e8f0",
-                fontSize: 12,
+                color: "#F8FAFC",
+                fontSize: "12px",
+                fontFamily: "monospace",
               }}
-              cursor={{ fill: "rgba(139, 92, 246, 0.08)" }}
+              cursor={{ fill: "rgba(16, 185, 129, 0.08)" }}
             />
-            <Bar dataKey="count" name="Candidates" radius={[4, 4, 0, 0]}>
+            <Bar dataKey="count" name="Candidates" radius={[3, 3, 0, 0]}>
               {data.map((_, index) => (
                 <Cell
                   key={index}

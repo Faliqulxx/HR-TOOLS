@@ -18,7 +18,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import {
   AlertDialog,
@@ -32,7 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { deleteJob, updateJobStatus } from "@/lib/actions/job.actions";
-import { Eye, Pencil, Trash2, Users } from "lucide-react";
+import { Eye, Pencil, Trash2, Users, PlusCircle } from "lucide-react";
 
 type Job = {
   id: string;
@@ -52,17 +51,17 @@ const statusConfig: Record<
   draft: {
     label: "Draft",
     className:
-      "bg-slate-700/50 text-slate-400 border border-slate-700 hover:bg-slate-700/70",
+      "bg-slate-800 text-slate-300 border border-slate-700 font-mono",
   },
   active: {
-    label: "Active",
+    label: "Active Requisition",
     className:
-      "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30",
+      "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono",
   },
   closed: {
     label: "Closed",
     className:
-      "bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30",
+      "bg-rose-500/10 text-rose-300 border border-rose-500/30 font-mono",
   },
 };
 
@@ -100,20 +99,22 @@ export function JobTable({ jobs }: JobTableProps) {
 
   if (jobs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-        <div className="h-12 w-12 rounded-xl bg-slate-800 flex items-center justify-center">
-          <Users className="h-6 w-6 text-slate-600" />
+      <div className="flex flex-col items-center justify-center py-20 gap-4 text-center rounded-xl border border-dashed border-[#182238] bg-[#0E131F]/50">
+        <div className="h-12 w-12 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+          <PlusCircle className="h-6 w-6" />
         </div>
-        <p className="text-slate-400 font-medium">No jobs yet</p>
-        <p className="text-slate-600 text-sm">
-          Create your first job posting to get started.
-        </p>
+        <div className="max-w-md">
+          <p className="text-slate-200 font-bold font-sans">No Job Requisitions Posted</p>
+          <p className="text-slate-400 text-xs mt-1 font-sans">
+            Create your first job posting to start evaluating and matching candidates.
+          </p>
+        </div>
         <Link href="/jobs/new">
           <Button
             size="sm"
-            className="mt-2 bg-violet-600 hover:bg-violet-700 text-white"
+            className="mt-1 bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-semibold shadow-md shadow-blue-900/30"
           >
-            Create Job
+            Create Job Requisition
           </Button>
         </Link>
       </div>
@@ -121,27 +122,29 @@ export function JobTable({ jobs }: JobTableProps) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 overflow-hidden">
+    <div className="rounded-xl border border-[#182238] bg-[#0E131F] overflow-hidden shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="border-slate-800 hover:bg-transparent">
-            <TableHead className="text-slate-500 font-medium">
-              Job Title
+          <TableRow className="border-[#182238] hover:bg-transparent bg-[#090D16]">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+              Job Position Title
             </TableHead>
-            <TableHead className="text-slate-500 font-medium">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
               Department
             </TableHead>
-            <TableHead className="text-slate-500 font-medium hidden md:table-cell">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 hidden md:table-cell">
               Location
             </TableHead>
-            <TableHead className="text-slate-500 font-medium hidden lg:table-cell">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 hidden lg:table-cell">
               Type
             </TableHead>
-            <TableHead className="text-slate-500 font-medium">Status</TableHead>
-            <TableHead className="text-slate-500 font-medium text-center hidden md:table-cell">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+              Status
+            </TableHead>
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 text-center hidden md:table-cell">
               Applicants
             </TableHead>
-            <TableHead className="text-slate-500 font-medium text-right">
+            <TableHead className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 text-right">
               Actions
             </TableHead>
           </TableRow>
@@ -154,31 +157,31 @@ export function JobTable({ jobs }: JobTableProps) {
             return (
               <TableRow
                 key={job.id}
-                className="border-slate-800 hover:bg-slate-800/40 transition-colors"
+                className="border-[#182238] hover:bg-[#121A2C]/60 transition-colors"
               >
                 {/* Title */}
-                <TableCell className="font-medium text-slate-200">
+                <TableCell className="font-bold text-slate-100 text-sm">
                   <Link
                     href={`/jobs/${job.id}`}
-                    className="hover:text-violet-400 transition-colors"
+                    className="hover:text-blue-400 transition-colors"
                   >
                     {job.title}
                   </Link>
                 </TableCell>
 
                 {/* Department */}
-                <TableCell className="text-slate-400 text-sm">
+                <TableCell className="text-slate-300 text-xs font-sans">
                   {job.department}
                 </TableCell>
 
                 {/* Location */}
-                <TableCell className="text-slate-400 text-sm hidden md:table-cell">
+                <TableCell className="text-slate-400 text-xs hidden md:table-cell font-sans">
                   {job.location}
                 </TableCell>
 
                 {/* Type */}
                 <TableCell className="hidden lg:table-cell">
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs font-mono text-slate-400">
                     {employmentTypeLabel[job.employmentType] ?? job.employmentType}
                   </span>
                 </TableCell>
@@ -190,23 +193,23 @@ export function JobTable({ jobs }: JobTableProps) {
                     onValueChange={(v) => handleStatusChange(job.id, v as string)}
                     disabled={isLoading}
                   >
-                    <SelectTrigger className="w-[120px] h-7 border-0 p-0 bg-transparent shadow-none focus:ring-0">
-                      <Badge className={`${statusCfg.className} cursor-pointer`}>
+                    <SelectTrigger className="w-[140px] h-7 border-0 p-0 bg-transparent shadow-none focus:ring-0">
+                      <Badge className={`${statusCfg.className} cursor-pointer text-[10px]`}>
                         {isLoading ? "Updating..." : statusCfg.label}
                       </Badge>
                     </SelectTrigger>
-                    <SelectContent className="border-slate-700 bg-slate-900 text-slate-100">
+                    <SelectContent className="border-[#1E2D4A] bg-[#0E131F] text-slate-100 font-mono text-xs">
                       <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="active">Active Requisition</SelectItem>
                       <SelectItem value="closed">Closed</SelectItem>
                     </SelectContent>
                   </Select>
                 </TableCell>
 
-                {/* Applicants */}
+                {/* Applicants Count */}
                 <TableCell className="text-center hidden md:table-cell">
-                  <span className="inline-flex items-center gap-1 text-sm text-slate-400">
-                    <Users className="h-3.5 w-3.5 text-slate-600" />
+                  <span className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-slate-200 bg-[#090D16] px-2.5 py-1 rounded-md border border-[#182238]">
+                    <Users className="h-3.5 w-3.5 text-blue-400" />
                     {job._count.applications}
                   </span>
                 </TableCell>
@@ -218,7 +221,8 @@ export function JobTable({ jobs }: JobTableProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-slate-500 hover:text-violet-400 hover:bg-violet-500/10"
+                        className="h-8 w-8 text-slate-400 hover:text-blue-400 hover:bg-blue-500/10"
+                        title="View Requisition & Candidates"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -227,7 +231,8 @@ export function JobTable({ jobs }: JobTableProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-slate-500 hover:text-blue-400 hover:bg-blue-500/10"
+                        className="h-8 w-8 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10"
+                        title="Edit Posting"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -239,32 +244,33 @@ export function JobTable({ jobs }: JobTableProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10"
+                            className="h-8 w-8 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
+                            title="Delete Requisition"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         }
                       />
-                      <AlertDialogContent className="border-slate-700 bg-slate-900">
+                      <AlertDialogContent className="border-[#1E2D4A] bg-[#0E131F]">
                         <AlertDialogHeader>
-                          <AlertDialogTitle className="text-slate-100">
-                            Delete Job Posting?
+                          <AlertDialogTitle className="text-slate-100 font-sans font-bold">
+                            Delete Job Requisition?
                           </AlertDialogTitle>
-                          <AlertDialogDescription className="text-slate-400">
+                          <AlertDialogDescription className="text-slate-400 text-xs font-sans">
                             This will permanently delete &quot;{job.title}&quot;
                             and all associated skill requirements. This action
                             cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700">
+                          <AlertDialogCancel className="border-[#1E2D4A] bg-[#090D16] text-slate-300 hover:bg-[#141B2D] font-mono text-xs">
                             Cancel
                           </AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(job.id)}
-                            className="bg-rose-600 text-white hover:bg-rose-700"
+                            className="bg-rose-600 text-white hover:bg-rose-500 font-mono text-xs font-semibold"
                           >
-                            Delete
+                            Delete Requisition
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
